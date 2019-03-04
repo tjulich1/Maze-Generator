@@ -1,2 +1,2 @@
 # Maze-Generator
-Graphical recursive maze generator.
+Graphical maze generator.
