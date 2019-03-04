@@ -9,8 +9,7 @@ package model;
  * @author Trent Julich
  * @version 0.0.1
  */
-public class MazeCell
-{
+public class MazeCell {
 
 	/**
 	 * Booleans representing whether a wall will be rendered on specified side of
@@ -25,8 +24,7 @@ public class MazeCell
 	private MazeCell northCell, eastCell, southCell, westCell;
 
 	/** Constructor for MazeCell object. **/
-	public MazeCell()
-	{
+	public MazeCell() {
 		this.visited = false;
 		this.northWall = true;
 		this.eastWall = true;
@@ -36,95 +34,77 @@ public class MazeCell
 
 	// Setters
 
-	public void setNorthWall(final boolean northWall)
-	{
+	public void setNorthWall(final boolean northWall) {
 		this.northWall = northWall;
 	}
 
-	public void setEastWall(final boolean eastWall)
-	{
+	public void setEastWall(final boolean eastWall) {
 		this.eastWall = eastWall;
 	}
 
-	public void setSouthWall(final boolean southWall)
-	{
+	public void setSouthWall(final boolean southWall) {
 		this.southWall = southWall;
 	}
 
-	public void setWestWall(final boolean westWall)
-	{
+	public void setWestWall(final boolean westWall) {
 		this.westWall = westWall;
 	}
 
-	public void setNorthCell(final MazeCell northCell)
-	{
+	public void setNorthCell(final MazeCell northCell) {
 		this.northCell = northCell;
 	}
 
-	public void setEastCell(final MazeCell eastCell)
-	{
+	public void setEastCell(final MazeCell eastCell) {
 		this.eastCell = eastCell;
 	}
 
-	public void setSouthCell(final MazeCell southCell)
-	{
+	public void setSouthCell(final MazeCell southCell) {
 		this.southCell = southCell;
 	}
 
-	public void setWestCell(final MazeCell westCell)
-	{
+	public void setWestCell(final MazeCell westCell) {
 		this.westCell = westCell;
 	}
 
-	public void setVisited(final boolean visited)
-	{
+	public void setVisited(final boolean visited) {
 		this.visited = visited;
 	}
 
 	// Getters
 
-	public boolean getNorthWall()
-	{
+	public boolean getNorthWall() {
 		return this.northWall;
 	}
 
-	public boolean getEastWall()
-	{
+	public boolean getEastWall() {
 		return this.eastWall;
 	}
 
-	public boolean getSouthWall()
-	{
+	public boolean getSouthWall() {
 		return this.southWall;
 	}
 
-	public boolean getWestWall()
-	{
+	public boolean getWestWall() {
 		return this.westWall;
 	}
 
-	public MazeCell getNorthCell()
-	{
+	public MazeCell getNorthCell() {
 		return this.northCell;
 	}
 
-	public MazeCell getEastCell()
-	{
+	public MazeCell getEastCell() {
 		return this.eastCell;
 	}
 
-	public MazeCell getSouthCell()
-	{
+	public MazeCell getSouthCell() {
 		return this.southCell;
 	}
 
-	public MazeCell getWestCell()
-	{
+	public MazeCell getWestCell() {
 		return this.westCell;
 	}
 
-	public boolean getIsVisited()
-	{
+	public boolean getIsVisited() {
 		return this.visited;
 	}
 }
