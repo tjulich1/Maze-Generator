@@ -11,56 +11,56 @@ package model;
  */
 public class Position {
 
-    //////////////////
-    ///// Fields /////
-    //////////////////
+	//////////////////
+	///// Fields /////
+	//////////////////
 
-    /** X coordinate of position in maze. **/
-    private int xCoordinate;
+	/** X coordinate of position in maze. **/
+	private int xCoordinate;
 
-    /** Y coordinate of position in maze. **/
-    private int yCoordinate;
+	/** Y coordinate of position in maze. **/
+	private int yCoordinate;
 
-    ////////////////////////
-    ///// Constructors /////
-    ////////////////////////
+	////////////////////////
+	///// Constructors /////
+	////////////////////////
 
-    /**
-     * Constructor for new position. Takes x and y coordinates representing current
-     * position in a 2D plane.
-     * 
-     * @param x The x component of position.
-     * @param y The y component of position.
-     */
-    public Position(final int x, final int y) {
-	this.xCoordinate = x;
-	this.yCoordinate = y;
-    }
+	/**
+	 * Constructor for new position. Takes x and y coordinates representing current
+	 * position in a 2D plane.
+	 * 
+	 * @param x The x component of position.
+	 * @param y The y component of position.
+	 */
+	public Position(final int x, final int y) {
+		this.xCoordinate = x;
+		this.yCoordinate = y;
+	}
 
-    //////////////////////////
-    ///// Public Methods /////
-    //////////////////////////
+	//////////////////////////
+	///// Public Methods /////
+	//////////////////////////
 
-    /**
-     * Method to get the x coordinate of this position.
-     * 
-     * @return The x coordinate of position.
-     */
-    public int getXPosition() {
-	return this.xCoordinate;
-    }
+	/**
+	 * Method to get the x coordinate of this position.
+	 * 
+	 * @return The x coordinate of position.
+	 */
+	public int getXPosition() {
+		return this.xCoordinate;
+	}
 
-    /**
-     * Method to get the y coordinate of this position.
-     * 
-     * @return The y coordinate of position.
-     */
-    public int getYPosition() {
-	return this.yCoordinate;
-    }
+	/**
+	 * Method to get the y coordinate of this position.
+	 * 
+	 * @return The y coordinate of position.
+	 */
+	public int getYPosition() {
+		return this.yCoordinate;
+	}
 
-    public String toString() {
-	return "[" + xCoordinate + ", " + yCoordinate + "]";
-    }
+	public String toString() {
+		return "[" + xCoordinate + ", " + yCoordinate + "]";
+	}
 
 }
