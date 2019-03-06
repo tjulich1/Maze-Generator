@@ -69,7 +69,7 @@ public final class Maze {
 
 	int xPos = 1;
 	int yPos = 1;
-	int scale = 50;
+	int scale = 2;
 
 	for (int j = 0; j < size; j++) {
 	    xPos = 1;

@@ -63,7 +63,7 @@ public class GUI extends JFrame {
 
 	// Test Maze
 
-	generator.generateMaze(10);
+	generator.generateMaze(2000);
 	mazePane.renderMaze(generator.getMaze());
 
 	// Test Maze
