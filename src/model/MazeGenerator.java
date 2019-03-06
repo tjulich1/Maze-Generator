@@ -10,35 +10,46 @@ package model;
  */
 public class MazeGenerator {
 
-	//////////////////
-	///// Fields /////
-	//////////////////
+    //////////////////
+    ///// Fields /////
+    //////////////////
 
-	/** 2D array representing the Maze. Contains MazeCells. **/
-	private Maze currentMaze;
+    /** 2D array representing the Maze. Contains MazeCells. **/
+    private Maze currentMaze;
 
-	///////////////////////
-	///// Constructors /////
-	///////////////////////
+    ///////////////////////
+    ///// Constructors /////
+    ///////////////////////
 
-	/**
-	 * Constructor for new Maze Generator.
-	 */
-	public MazeGenerator() {
+    /**
+     * Constructor for new Maze Generator.
+     */
+    public MazeGenerator() {
 
-	}
+    }
 
-	///////////////////////////
-	///// Public Methods /////
-	///////////////////////////
+    ///////////////////////////
+    ///// Public Methods /////
+    ///////////////////////////
 
-	/**
-	 * Method used to return the last maze generated.
-	 * 
-	 * @return The last Maze generated.
-	 */
-	public Maze getMaze() {
-		return this.currentMaze;
-	}
+    /**
+     * Called to create a new maze of the specified size, as well as saving all
+     * previous states of the maze.
+     * 
+     * @param size The size of the maze.
+     */
+    public void generateMaze(final int size) {
+	currentMaze = new Maze(size);
+	currentMaze.generate();
+    }
+
+    /**
+     * Method used to return the last maze generated.
+     * 
+     * @return The last Maze generated.
+     */
+    public Maze getMaze() {
+	return this.currentMaze;
+    }
 
 }
