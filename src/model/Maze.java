@@ -59,6 +59,8 @@ public final class Maze {
 		fillWithNewCells();
 		linkCells();
 		createMaze();
+		createEntrance();
+		createExit();
 	}
 
 	/** Method used to get size of maze. **/
@@ -87,7 +89,7 @@ public final class Maze {
 	 */
 	public void render(final Graphics g) {
 		final Graphics2D g2d = (Graphics2D) g;
-		g2d.setStroke(new BasicStroke(2));
+		g2d.setStroke(new BasicStroke(1));
 		g.setColor(Color.BLACK);
 
 		int scale = (renderPanelSize.height - 10) / this.size;
@@ -97,6 +99,9 @@ public final class Maze {
 		for (int j = 0; j < size; j++) {
 			xPos = (renderPanelSize.width - (scale * this.size)) / 2;
 			for (int i = 0; i < size; i++) {
+//				g.setColor(Color.LIGHT_GRAY);
+//				g.fillRect(xPos, yPos, scale, scale);
+//				g.setColor(Color.BLACK);
 				if (currentState[i][j].getNorthWall()) {
 					g.drawLine(xPos, yPos, xPos + scale, yPos);
 				}
@@ -292,6 +297,22 @@ public final class Maze {
 		currentState[x - 1][y].setVisited(true);
 		currentState[x - 1][y].setEastWall(false);
 		currentState[x][y].setWestWall(false);
+	}
+
+	/**
+	 * Used to create a random entrance at the top of the maze.
+	 */
+	private void createEntrance() {
+		final int entrance = (int) (Math.random() * size);
+		currentState[entrance][0].setNorthWall(false);
+	}
+
+	/**
+	 * Used to create a random exit at the bottom of the maze.
+	 */
+	private void createExit() {
+		final int exit = (int) (Math.random() * size);
+		currentState[exit][size - 1].setSouthWall(false);
 	}
 
 }

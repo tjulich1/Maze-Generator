@@ -64,7 +64,7 @@ public class GUI extends JFrame {
 
 		// Test Maze
 
-		generator.generateMaze(200);
+		generator.generateMaze(100);
 		mazePane.renderMaze(generator.getMaze());
 
 		// Test Maze
@@ -81,14 +81,16 @@ public class GUI extends JFrame {
 		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(screenSize.width, screenSize.height);
+		this.setSize(screenSize.width - 50, screenSize.height - 50);
+		this.setLocationRelativeTo(null);
 		this.setLayout(new GridBagLayout());
 
 		// Set Background color of main frame.
 		final Container c = this.getContentPane();
-		c.setBackground(Color.LIGHT_GRAY);
+		c.setBackground(Color.DARK_GRAY);
 
 		this.setTitle(TITLE);
+		this.setResizable(false);
 	}
 
 }
