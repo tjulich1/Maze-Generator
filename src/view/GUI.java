@@ -5,11 +5,9 @@ package view;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
-
+import java.awt.Toolkit;
 import javax.swing.JFrame;
-
 import model.MazeGenerator;
 
 /**
@@ -21,69 +19,76 @@ import model.MazeGenerator;
  */
 public class GUI extends JFrame {
 
-    //////////////////
-    ///// Fields /////
-    //////////////////
+	//////////////////
+	///// Fields /////
+	//////////////////
 
-    /**
-     * Serial Version ID.
-     */
-    private static final long serialVersionUID = -7174075501199373132L;
+	/**
+	 * Serial Version ID.
+	 */
+	private static final long serialVersionUID = -7174075501199373132L;
 
-    /** The pane that the maze will be drawn to. **/
-    private RenderPane mazePane;
+	/** Title of application, displayed at top of window. **/
+	private static final String TITLE = "Maze Generator";
 
-    /** MazeGenerator object used to create and request mazes. **/
-    private MazeGenerator generator;
+	/** The pane that the maze will be drawn to. **/
+	private RenderPane mazePane;
 
-    ////////////////////////
-    ///// Constructors /////
-    ////////////////////////
+	/** MazeGenerator object used to create and request mazes. **/
+	private MazeGenerator generator;
 
-    /**
-     * Default constructor for new GUI.
-     */
-    public GUI() {
-	this.mazePane = new RenderPane();
-	generator = new MazeGenerator();
-    }
+	////////////////////////
+	///// Constructors /////
+	////////////////////////
 
-    //////////////////////////
-    ///// Public Methods /////
-    //////////////////////////
+	/**
+	 * Default constructor for new GUI.
+	 */
+	public GUI() {
+		this.mazePane = new RenderPane();
+	}
 
-    /**
-     * Method called to initialize and view GUI.
-     */
-    public void start() {
-	initializeFrame();
-	mazePane.setPreferredSize(new Dimension(800, 600));
-	this.add(this.mazePane);
-	this.setVisible(true);
+	//////////////////////////
+	///// Public Methods /////
+	//////////////////////////
 
-	// Test Maze
+	/**
+	 * Method called to initialize and view GUI.
+	 */
+	public void start() {
+		initializeFrame();
+		mazePane.setPreferredSize(new Dimension(this.getHeight() - 200, this.getHeight() - 200));
+		this.add(this.mazePane);
+		this.setVisible(true);
+		generator = new MazeGenerator(mazePane.getSize());
 
-	generator.generateMaze(2000);
-	mazePane.renderMaze(generator.getMaze());
+		// Test Maze
 
-	// Test Maze
-    }
+		generator.generateMaze(200);
+		mazePane.renderMaze(generator.getMaze());
 
-    ///////////////////////////
-    ///// Private Methods /////
-    ///////////////////////////
+		// Test Maze
+	}
 
-    /**
-     * Helper method called to initialize default values for frame.
-     */
-    private void initializeFrame() {
-	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	this.setSize(1000, 800);
-	this.setLayout(new GridBagLayout());
+	///////////////////////////
+	///// Private Methods /////
+	///////////////////////////
 
-	// Set Background color of main frame.
-	final Container c = this.getContentPane();
-	c.setBackground(Color.LIGHT_GRAY);
-    }
+	/**
+	 * Helper method called to initialize default values for frame.
+	 */
+	private void initializeFrame() {
+		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setSize(screenSize.width, screenSize.height);
+		this.setLayout(new GridBagLayout());
+
+		// Set Background color of main frame.
+		final Container c = this.getContentPane();
+		c.setBackground(Color.LIGHT_GRAY);
+
+		this.setTitle(TITLE);
+	}
 
 }

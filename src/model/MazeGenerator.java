@@ -2,6 +2,8 @@
 
 package model;
 
+import java.awt.Dimension;
+
 /**
  * Maze class, containing methods used to generate mazes.
  * 
@@ -10,46 +12,50 @@ package model;
  */
 public class MazeGenerator {
 
-    //////////////////
-    ///// Fields /////
-    //////////////////
+	//////////////////
+	///// Fields /////
+	//////////////////
 
-    /** 2D array representing the Maze. Contains MazeCells. **/
-    private Maze currentMaze;
+	/** 2D array representing the Maze. Contains MazeCells. **/
+	private Maze currentMaze;
 
-    ///////////////////////
-    ///// Constructors /////
-    ///////////////////////
+	/** Size of the render panel that generated mazes will be drawn to. **/
+	private Dimension renderPanelSize;
 
-    /**
-     * Constructor for new Maze Generator.
-     */
-    public MazeGenerator() {
+	///////////////////////
+	///// Constructors /////
+	///////////////////////
 
-    }
+	/**
+	 * Constructor for new Maze Generator.
+	 */
+	public MazeGenerator(final Dimension renderPanelSize) {
+		this.renderPanelSize = renderPanelSize;
+	}
 
-    ///////////////////////////
-    ///// Public Methods /////
-    ///////////////////////////
+	///////////////////////////
+	///// Public Methods /////
+	///////////////////////////
 
-    /**
-     * Called to create a new maze of the specified size, as well as saving all
-     * previous states of the maze.
-     * 
-     * @param size The size of the maze.
-     */
-    public void generateMaze(final int size) {
-	currentMaze = new Maze(size);
-	currentMaze.generate();
-    }
+	/**
+	 * Called to create a new maze of the specified size, as well as saving all
+	 * previous states of the maze.
+	 * 
+	 * @param size The size of the maze.
+	 */
+	public void generateMaze(final int size) {
+		currentMaze = new Maze(size);
+		currentMaze.setRenderPanelSize(renderPanelSize);
+		currentMaze.generate();
+	}
 
-    /**
-     * Method used to return the last maze generated.
-     * 
-     * @return The last Maze generated.
-     */
-    public Maze getMaze() {
-	return this.currentMaze;
-    }
+	/**
+	 * Method used to return the last maze generated.
+	 * 
+	 * @return The last Maze generated.
+	 */
+	public Maze getMaze() {
+		return this.currentMaze;
+	}
 
 }
