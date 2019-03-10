@@ -7,15 +7,17 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 
 import model.MazeGenerator;
 
@@ -76,10 +78,8 @@ public class GUI extends JFrame {
 		this.pack();
 		this.setPreferredSize(new Dimension(this.getWidth() + 50, this.getHeight() + 50));
 		this.pack();
+		this.setLocationRelativeTo(null);
 		this.setVisible(true);
-
-		generator.generateMaze(100);
-		mazePane.renderMaze(generator.getMaze());
 	}
 
 	///////////////////////////
@@ -94,10 +94,8 @@ public class GUI extends JFrame {
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(screenSize.width - 50, screenSize.height - 50);
-		this.setLocationRelativeTo(null);
 		this.setLayout(new GridBagLayout());
 
-		// Set Background color of main frame.
 		final Container c = this.getContentPane();
 		c.setBackground(Color.DARK_GRAY);
 
@@ -123,16 +121,21 @@ public class GUI extends JFrame {
 		toolPane.setSize(new Dimension(200, this.getHeight() - 200));
 		toolPane.setPreferredSize(new Dimension(200, this.getHeight() - 200));
 		toolPane.setLayout(new GridBagLayout());
+
+		final JSpinner sizes = new JSpinner();
+		SpinnerModel sizeModel = new SpinnerNumberModel(50, 2, 100, 1);
+		sizes.setModel(sizeModel);
+
 		final JButton runButton = new JButton("Run");
 		runButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				generator.generateMaze(100);
+				generator.generateMaze((Integer) sizes.getModel().getValue());
 				mazePane.renderMaze(generator.getMaze());
 			}
 		});
 		toolPane.add(runButton);
-
+		toolPane.add(sizes);
 	}
 
 	/**
