@@ -99,9 +99,6 @@ public final class Maze {
 		for (int j = 0; j < size; j++) {
 			xPos = (renderPanelSize.width - (scale * this.size)) / 2;
 			for (int i = 0; i < size; i++) {
-//				g.setColor(Color.LIGHT_GRAY);
-//				g.fillRect(xPos, yPos, scale, scale);
-//				g.setColor(Color.BLACK);
 				if (currentState[i][j].getNorthWall()) {
 					g.drawLine(xPos, yPos, xPos + scale, yPos);
 				}

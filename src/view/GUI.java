@@ -5,9 +5,18 @@ package view;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+
 import model.MazeGenerator;
 
 /**
@@ -37,6 +46,9 @@ public class GUI extends JFrame {
 	/** MazeGenerator object used to create and request mazes. **/
 	private MazeGenerator generator;
 
+	/** Button used to create and render a new maze. **/
+	private JPanel toolPane;
+
 	////////////////////////
 	///// Constructors /////
 	////////////////////////
@@ -46,6 +58,7 @@ public class GUI extends JFrame {
 	 */
 	public GUI() {
 		this.mazePane = new RenderPane();
+		this.toolPane = new JPanel();
 	}
 
 	//////////////////////////
@@ -57,17 +70,16 @@ public class GUI extends JFrame {
 	 */
 	public void start() {
 		initializeFrame();
-		mazePane.setPreferredSize(new Dimension(this.getHeight() - 200, this.getHeight() - 200));
-		this.add(this.mazePane);
+		setupRenderPane();
+		setupToolPane();
+		addComponents();
+		this.pack();
+		this.setPreferredSize(new Dimension(this.getWidth() + 50, this.getHeight() + 50));
+		this.pack();
 		this.setVisible(true);
-		generator = new MazeGenerator(mazePane.getSize());
-
-		// Test Maze
 
 		generator.generateMaze(100);
 		mazePane.renderMaze(generator.getMaze());
-
-		// Test Maze
 	}
 
 	///////////////////////////
@@ -91,6 +103,46 @@ public class GUI extends JFrame {
 
 		this.setTitle(TITLE);
 		this.setResizable(false);
+	}
+
+	/**
+	 * Used to setup the panel on which the mazes will be rendered. Includes setting
+	 * size, etc.
+	 */
+	private void setupRenderPane() {
+		mazePane.setPreferredSize(new Dimension(this.getHeight() - 200, this.getHeight() - 200));
+		mazePane.setSize(new Dimension(this.getHeight() - 200, this.getHeight() - 200));
+		generator = new MazeGenerator(mazePane.getSize());
+	}
+
+	/**
+	 * Method used to setup the tool panel that contains controls over the maze
+	 * generator.
+	 */
+	private void setupToolPane() {
+		toolPane.setSize(new Dimension(200, this.getHeight() - 200));
+		toolPane.setPreferredSize(new Dimension(200, this.getHeight() - 200));
+		toolPane.setLayout(new GridBagLayout());
+		final JButton runButton = new JButton("Run");
+		runButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				generator.generateMaze(100);
+				mazePane.renderMaze(generator.getMaze());
+			}
+		});
+		toolPane.add(runButton);
+
+	}
+
+	/**
+	 * Used to add all components to the main GUI.
+	 */
+	private void addComponents() {
+		this.add(mazePane);
+		GridBagConstraints c = new GridBagConstraints();
+		c.insets = new Insets(0, 50, 0, 0);
+		this.add(toolPane, c);
 	}
 
 }
