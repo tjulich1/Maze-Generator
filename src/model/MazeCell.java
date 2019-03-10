@@ -1,5 +1,3 @@
-// Trent Julich ~ 24 December 2018
-
 package model;
 
 /**
@@ -7,7 +5,7 @@ package model;
  * cell, as well as neighboring cells.
  * 
  * @author Trent Julich
- * @version 0.0.1
+ * @version 9 March 2019
  */
 public class MazeCell {
 

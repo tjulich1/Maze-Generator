@@ -1,5 +1,3 @@
-// Trent Julich ~ 4 March 2019
-
 package view;
 
 import java.awt.Color;
@@ -27,7 +25,7 @@ import model.MazeGenerator;
  * that the user interacts with.
  * 
  * @author Trent Julich
- * @version 4 March 2019
+ * @version 9 March 2019
  */
 public class GUI extends JFrame {
 
@@ -120,18 +118,24 @@ public class GUI extends JFrame {
 	 * generator.
 	 */
 	private void setupToolPane() {
+
+		// sets size and layout of tool pane.
 		final int paneHeight = 150;
 		final int paneWidth = 100;
 		toolPane.setSize(new Dimension(paneWidth, paneHeight));
 		toolPane.setPreferredSize(new Dimension(paneWidth, paneHeight));
 		toolPane.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridy = 0;
 
+		// create spinner for the different sizes of mazes.
+		final int max = 100;
+		final int min = 2;
+		final int step = 1;
+		final int start = 50;
 		final JSpinner sizes = new JSpinner();
-		SpinnerModel sizeModel = new SpinnerNumberModel(50, 2, 100, 1);
+		SpinnerModel sizeModel = new SpinnerNumberModel(start, min, max, step);
 		sizes.setModel(sizeModel);
 
+		// create run button used to start rendering maze.
 		final JButton runButton = new JButton("Run");
 		runButton.addActionListener(new ActionListener() {
 			@Override
@@ -140,9 +144,13 @@ public class GUI extends JFrame {
 				mazePane.renderMaze(generator.getMaze());
 			}
 		});
+
+		// constraint to make each component have its own row, and add padding between.
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridy = 0;
 		toolPane.add(runButton, c);
-		c.gridy++;
 		c.insets = new Insets(50, 0, 0, 0);
+		c.gridy++;
 		toolPane.add(sizes, c);
 	}
 

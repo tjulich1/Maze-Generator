@@ -1,5 +1,3 @@
-// Trent Julich ~ 3 March 2019
-
 package model;
 
 import java.awt.BasicStroke;
@@ -13,6 +11,9 @@ import java.util.Deque;
 /**
  * Class representing a Maze. Keeps track of its current state, size, as well as
  * all previous states of the maze (used for rendering).
+ * 
+ * @author Trent Julich
+ * @version 9 March 2019
  */
 public final class Maze {
 
@@ -25,9 +26,6 @@ public final class Maze {
 
 	/** The number of rows and columns in the maze. **/
 	private int size;
-
-	/** Stack used to keep track of path through maze when generating the maze. **/
-	private final Deque<Position> path;
 
 	/** The size of the render pane that this maze will be drawn to. **/
 	private Dimension renderPanelSize;
@@ -44,7 +42,6 @@ public final class Maze {
 	public Maze(final int size) {
 		this.size = size;
 		this.currentState = new MazeCell[size][size];
-		this.path = new ArrayDeque<Position>();
 		this.renderPanelSize = new Dimension(0, 0);
 	}
 
@@ -92,10 +89,12 @@ public final class Maze {
 		g2d.setStroke(new BasicStroke(1));
 		g.setColor(Color.BLACK);
 
+		// Change scale and starting position so that entire maze can fit on maze pane.
 		int scale = (renderPanelSize.height - 10) / this.size;
 		int xPos = (renderPanelSize.width - (scale * this.size)) / 2;
 		int yPos = (renderPanelSize.height - (scale * this.size)) / 2;
 
+		// Check and draw each maze cell wall (if it exists).
 		for (int j = 0; j < size; j++) {
 			xPos = (renderPanelSize.width - (scale * this.size)) / 2;
 			for (int i = 0; i < size; i++) {
@@ -165,22 +164,27 @@ public final class Maze {
 	 */
 	private void createMaze() {
 
-		int currentX = (int) (Math.random() * size);
+		// Deque used as a stack to keep track of path through maze.
+		final Deque<Position> path = new ArrayDeque<>();
 
+		// Pick random starting positions in the maze.
+		int currentX = (int) (Math.random() * size);
 		int currentY = (int) (Math.random() * size);
 
-		path.push(new Position(currentX, currentY));
+		// Starting position.
+		Position currentPosition = new Position(currentX, currentY);
+
+		// Push initial position onto stack.
+		path.push(currentPosition);
 
 		while (!path.isEmpty()) {
-			if (!checkMoves(currentX, currentY)) {
-				final Position previousPosition = path.pop();
-				currentX = previousPosition.getXPosition();
-				currentY = previousPosition.getYPosition();
-			} else {
-				final Position newPosition = makeMove(currentX, currentY);
-				currentX = newPosition.getXPosition();
-				currentY = newPosition.getYPosition();
-				path.push(newPosition);
+			// If there are no moves from current position, go back to last position.
+			if (!checkMoves(currentPosition)) {
+				currentPosition = path.pop();
+			} // Else move to new random location adjacent to current location.
+			else {
+				currentPosition = makeMove(currentPosition);
+				path.push(currentPosition);
 			}
 		}
 	}
@@ -188,11 +192,13 @@ public final class Maze {
 	/**
 	 * Checks maze cells surrounding current cells and checks for open moves.
 	 * 
-	 * @param x The x coordinate of current position.
-	 * @param y The y coordinate of current position.
+	 * @param position The current position from which a move is wanting to be made.
 	 * @return True if there is an open move adjacent to current position.
 	 */
-	private boolean checkMoves(final int x, final int y) {
+	private boolean checkMoves(final Position position) {
+		final int x = position.getXPosition();
+		final int y = position.getYPosition();
+
 		// Check all 4 directions. Returns true if at least one position is open.
 		return (y < size - 1 && !currentState[x][y + 1].getIsVisited())
 				|| (y > 0 && !currentState[x][y - 1].getIsVisited())
@@ -201,18 +207,29 @@ public final class Maze {
 	}
 
 	/**
-	 * Called to return a position adjacent to the current position which has not
-	 * been visited yet.
+	 * Called to return a random position adjacent to the current position which has
+	 * not been visited yet. Method assumes there is at least one valid move able to
+	 * be made.
 	 * 
 	 * @param x The current x position.
 	 * @param y The current y position.
 	 * @return New valid position that has not been visited yet.
 	 */
-	private Position makeMove(final int x, final int y) {
+	private Position makeMove(final Position position) {
 		boolean moveMade = false;
-		Position newPosition = new Position(x, y);
+		final int x = position.getXPosition();
+		final int y = position.getYPosition();
+		Position newPosition = position;
+
+		// Choose a random direction to attempt to travel in.
 		int testDirection = (int) (Math.random() * 4);
 
+		/*
+		 * While a move has not been made, choose a random direction to attempt to move
+		 * in. First check if that direction is valid, then check if the adjacent cell
+		 * in that direction has NOT been visited. If not, move into it. Otherwise, try
+		 * another random direction.
+		 */
 		while (!moveMade) {
 			if (testDirection == 0) {
 				if (y > 0 && !currentState[x][y - 1].getIsVisited()) {

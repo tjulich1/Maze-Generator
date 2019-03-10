@@ -1,5 +1,3 @@
-// Trent Julich ~ 4 March 2019
-
 package model;
 
 /**
@@ -7,7 +5,7 @@ package model;
  * coordinate, corresponding to rows and columns in a maze.
  * 
  * @author Trent Julich
- * @version 4 March 2019
+ * @version 9 March 2019
  */
 public class Position {
 
@@ -60,7 +58,7 @@ public class Position {
 	}
 
 	public String toString() {
-		return "[" + xCoordinate + ", " + yCoordinate + "]";
+		return "(" + xCoordinate + ", " + yCoordinate + ")";
 	}
 
 }

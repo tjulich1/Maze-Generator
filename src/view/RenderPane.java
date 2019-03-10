@@ -1,5 +1,3 @@
-// Trent Julich ~ 4 March 2019
-
 package view;
 
 import java.awt.Color;
@@ -12,7 +10,7 @@ import model.Maze;
  * Panel that maze will be rendered onto.
  * 
  * @author Trent Julich
- * @version 4 March 2019
+ * @version 9 March 2019
  */
 public class RenderPane extends JPanel {
 
@@ -36,7 +34,7 @@ public class RenderPane extends JPanel {
 	 * Constructor for Render Pane
 	 */
 	public RenderPane() {
-
+		super();
 	}
 
 	//////////////////////////
@@ -55,10 +53,13 @@ public class RenderPane extends JPanel {
 
 	@Override
 	public void paintComponent(final Graphics g) {
+
+		// fills background with white.
 		final Graphics2D g2d = (Graphics2D) g;
 		g2d.setColor(Color.WHITE);
 		g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
 
+		// draws a maze if there is one to draw.
 		if (currentMaze != null) {
 			currentMaze.render(g);
 		}

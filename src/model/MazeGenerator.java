@@ -1,5 +1,3 @@
-// Trent Julich ~ 3 March 2019
-
 package model;
 
 import java.awt.Dimension;
@@ -8,7 +6,7 @@ import java.awt.Dimension;
  * Maze class, containing methods used to generate mazes.
  * 
  * @author Trenton Julich
- * @version 2 March 2019
+ * @version 9 March 2019
  */
 public class MazeGenerator {
 
