@@ -12,6 +12,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -95,6 +96,7 @@ public class GUI extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(screenSize.width - 50, screenSize.height - 50);
 		this.setLayout(new GridBagLayout());
+		this.setIconImage(new ImageIcon("./resources/maze.png").getImage());
 
 		final Container c = this.getContentPane();
 		c.setBackground(Color.DARK_GRAY);
@@ -118,9 +120,13 @@ public class GUI extends JFrame {
 	 * generator.
 	 */
 	private void setupToolPane() {
-		toolPane.setSize(new Dimension(200, this.getHeight() - 200));
-		toolPane.setPreferredSize(new Dimension(200, this.getHeight() - 200));
+		final int paneHeight = 150;
+		final int paneWidth = 100;
+		toolPane.setSize(new Dimension(paneWidth, paneHeight));
+		toolPane.setPreferredSize(new Dimension(paneWidth, paneHeight));
 		toolPane.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridy = 0;
 
 		final JSpinner sizes = new JSpinner();
 		SpinnerModel sizeModel = new SpinnerNumberModel(50, 2, 100, 1);
@@ -134,8 +140,10 @@ public class GUI extends JFrame {
 				mazePane.renderMaze(generator.getMaze());
 			}
 		});
-		toolPane.add(runButton);
-		toolPane.add(sizes);
+		toolPane.add(runButton, c);
+		c.gridy++;
+		c.insets = new Insets(50, 0, 0, 0);
+		toolPane.add(sizes, c);
 	}
 
 	/**
@@ -143,8 +151,11 @@ public class GUI extends JFrame {
 	 */
 	private void addComponents() {
 		this.add(mazePane);
+
+		// Constraint used to add a 50 pixel buffer to the edge of each component.
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(0, 50, 0, 0);
+
 		this.add(toolPane, c);
 	}
 
