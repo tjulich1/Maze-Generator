@@ -128,7 +128,7 @@ public class GUI extends JFrame {
 
 		// create spinner for the different sizes of mazes.
 		final int max = 100;
-		final int min = 2;
+		final int min = 10;
 		final int step = 1;
 		final int start = 50;
 		final JSpinner sizes = new JSpinner();

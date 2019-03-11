@@ -7,10 +7,12 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Class representing a Maze. Keeps track of its current state, size, as well as
- * all previous states of the maze (used for rendering).
+ * Class representing a Maze. Keeps track of the final generated maze, as well
+ * as the size of maze.
  * 
  * @author Trent Julich
  * @version 9 March 2019
@@ -22,6 +24,13 @@ public final class Maze {
 	//////////////////
 
 	/** The current state of the maze. **/
+	private MazeCell[][] finalState;
+
+	/**
+	 * A secondary 'maze' that can be used for rendering. Starts off being empty,
+	 * but once a maze has been generated, this maze can be used to render step by
+	 * step the path that generation took.
+	 **/
 	private MazeCell[][] currentState;
 
 	/** The number of rows and columns in the maze. **/
@@ -29,6 +38,11 @@ public final class Maze {
 
 	/** The size of the render pane that this maze will be drawn to. **/
 	private Dimension renderPanelSize;
+
+	/**
+	 * List containing all moves that were taken during the last maze generation.
+	 **/
+	private List<Move> moves;
 
 	////////////////////////
 	///// Constructors /////
@@ -41,8 +55,10 @@ public final class Maze {
 	 */
 	public Maze(final int size) {
 		this.size = size;
+		this.finalState = new MazeCell[size][size];
 		this.currentState = new MazeCell[size][size];
 		this.renderPanelSize = new Dimension(0, 0);
+		this.moves = new LinkedList<Move>();
 	}
 
 	//////////////////////////
@@ -67,7 +83,7 @@ public final class Maze {
 
 	/**
 	 * Method used to assign the size of the panel that this maze will be rendered
-	 * to. Should be done before render method is called. Ensures proper scaling of
+	 * to. Should be done before render method is called to ensure proper scaling of
 	 * the maze in proportion to the size of the window.
 	 * 
 	 * @param renderPanelSize Dimension of the panel on which the maze is being
@@ -98,16 +114,16 @@ public final class Maze {
 		for (int j = 0; j < size; j++) {
 			xPos = (renderPanelSize.width - (scale * this.size)) / 2;
 			for (int i = 0; i < size; i++) {
-				if (currentState[i][j].getNorthWall()) {
+				if (finalState[i][j].getNorthWall()) {
 					g.drawLine(xPos, yPos, xPos + scale, yPos);
 				}
-				if (currentState[i][j].getWestWall()) {
+				if (finalState[i][j].getWestWall()) {
 					g.drawLine(xPos, yPos, xPos, yPos + scale);
 				}
-				if (currentState[i][j].getSouthWall()) {
+				if (finalState[i][j].getSouthWall()) {
 					g.drawLine(xPos, yPos + scale, xPos + scale, yPos + scale);
 				}
-				if (currentState[i][j].getEastWall()) {
+				if (finalState[i][j].getEastWall()) {
 					g.drawLine(xPos + scale, yPos, xPos + scale, yPos + scale);
 				}
 				xPos += scale;
@@ -127,6 +143,12 @@ public final class Maze {
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				// Fill current maze state with empty cells.
+				finalState[i][j] = new MazeCell();
+			}
+		}
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				// Fill secondary 'rendering' maze with empty cells.
 				currentState[i][j] = new MazeCell();
 			}
 		}
@@ -136,6 +158,26 @@ public final class Maze {
 	 * Helper method used to connect each cell with its neighbors.
 	 */
 	private void linkCells() {
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				// If east neighbor exists, link it to current cell.
+				if (i > 0) {
+					finalState[i][j].setWestCell(finalState[i - 1][j]);
+				}
+				// If west neighbor exists, link it to current cell.
+				if (i < size - 1) {
+					finalState[i][j].setEastCell(finalState[i + 1][j]);
+				}
+				// If north neighbor exists, link it to current cell.
+				if (j > 0) {
+					finalState[i][j].setNorthCell(finalState[i][j - 1]);
+				}
+				// If south neighbor exists, link it to current cell.
+				if (j < size - 1) {
+					finalState[i][j].setSouthCell(finalState[i][j + 1]);
+				}
+			}
+		}
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				// If east neighbor exists, link it to current cell.
@@ -200,10 +242,9 @@ public final class Maze {
 		final int y = position.getYPosition();
 
 		// Check all 4 directions. Returns true if at least one position is open.
-		return (y < size - 1 && !currentState[x][y + 1].getIsVisited())
-				|| (y > 0 && !currentState[x][y - 1].getIsVisited())
-				|| (x < size - 1 && !currentState[x + 1][y].getIsVisited())
-				|| (x > 0 && !currentState[x - 1][y].getIsVisited());
+		return (y < size - 1 && !finalState[x][y + 1].getIsVisited()) || (y > 0 && !finalState[x][y - 1].getIsVisited())
+				|| (x < size - 1 && !finalState[x + 1][y].getIsVisited())
+				|| (x > 0 && !finalState[x - 1][y].getIsVisited());
 	}
 
 	/**
@@ -232,25 +273,25 @@ public final class Maze {
 		 */
 		while (!moveMade) {
 			if (testDirection == 0) {
-				if (y > 0 && !currentState[x][y - 1].getIsVisited()) {
+				if (y > 0 && !finalState[x][y - 1].getIsVisited()) {
 					moveNorth(x, y);
 					newPosition = new Position(x, y - 1);
 					moveMade = true;
 				}
 			} else if (testDirection == 1) {
-				if (x < size - 1 && !currentState[x + 1][y].getIsVisited()) {
+				if (x < size - 1 && !finalState[x + 1][y].getIsVisited()) {
 					newPosition = new Position(x + 1, y);
 					moveEast(x, y);
 					moveMade = true;
 				}
 			} else if (testDirection == 2) {
-				if (y < size - 1 && !currentState[x][y + 1].getIsVisited()) {
+				if (y < size - 1 && !finalState[x][y + 1].getIsVisited()) {
 					newPosition = new Position(x, y + 1);
 					moveSouth(x, y);
 					moveMade = true;
 				}
 			} else if (testDirection == 3) {
-				if (x > 0 && !currentState[x - 1][y].getIsVisited()) {
+				if (x > 0 && !finalState[x - 1][y].getIsVisited()) {
 					newPosition = new Position(x - 1, y);
 					moveWest(x, y);
 					moveMade = true;
@@ -269,9 +310,9 @@ public final class Maze {
 	 * @param y Y coordinate before move.
 	 */
 	private void moveNorth(final int x, final int y) {
-		currentState[x][y - 1].setVisited(true);
-		currentState[x][y - 1].setSouthWall(false);
-		currentState[x][y].setNorthWall(false);
+		finalState[x][y - 1].setVisited(true);
+		finalState[x][y - 1].setSouthWall(false);
+		finalState[x][y].setNorthWall(false);
 	}
 
 	/**
@@ -282,9 +323,9 @@ public final class Maze {
 	 * @param y Y coordinate before move.
 	 */
 	private void moveEast(final int x, final int y) {
-		currentState[x + 1][y].setVisited(true);
-		currentState[x + 1][y].setWestWall(false);
-		currentState[x][y].setEastWall(false);
+		finalState[x + 1][y].setVisited(true);
+		finalState[x + 1][y].setWestWall(false);
+		finalState[x][y].setEastWall(false);
 	}
 
 	/**
@@ -295,9 +336,9 @@ public final class Maze {
 	 * @param y Y coordinate before move.
 	 */
 	private void moveSouth(final int x, final int y) {
-		currentState[x][y + 1].setVisited(true);
-		currentState[x][y + 1].setNorthWall(false);
-		currentState[x][y].setSouthWall(false);
+		finalState[x][y + 1].setVisited(true);
+		finalState[x][y + 1].setNorthWall(false);
+		finalState[x][y].setSouthWall(false);
 	}
 
 	/**
@@ -308,9 +349,9 @@ public final class Maze {
 	 * @param y Y coordinate before move.
 	 */
 	private void moveWest(final int x, final int y) {
-		currentState[x - 1][y].setVisited(true);
-		currentState[x - 1][y].setEastWall(false);
-		currentState[x][y].setWestWall(false);
+		finalState[x - 1][y].setVisited(true);
+		finalState[x - 1][y].setEastWall(false);
+		finalState[x][y].setWestWall(false);
 	}
 
 	/**
@@ -318,7 +359,7 @@ public final class Maze {
 	 */
 	private void createEntrance() {
 		final int entrance = (int) (Math.random() * size);
-		currentState[entrance][0].setNorthWall(false);
+		finalState[entrance][0].setNorthWall(false);
 	}
 
 	/**
@@ -326,7 +367,7 @@ public final class Maze {
 	 */
 	private void createExit() {
 		final int exit = (int) (Math.random() * size);
-		currentState[exit][size - 1].setSouthWall(false);
+		finalState[exit][size - 1].setSouthWall(false);
 	}
 
 }
