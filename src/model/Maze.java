@@ -116,10 +116,17 @@ public final class Maze {
 		int xPos = (renderPanelSize.width - (scale * this.size)) / 2;
 		int yPos = (renderPanelSize.height - (scale * this.size)) / 2;
 
+		final int base = (renderPanelSize.width - (scale * this.size)) / 2;
+
 		// Check and draw each maze cell wall (if it exists).
 		for (int j = 0; j < size; j++) {
 			xPos = (renderPanelSize.width - (scale * this.size)) / 2;
 			for (int i = 0; i < size; i++) {
+				if (currentState[i][j].getIsVisited()) {
+					g2d.setColor(Color.LIGHT_GRAY);
+					g2d.fillRect(xPos + 1, yPos + 1, scale, scale);
+					g2d.setColor(Color.BLACK);
+				}
 				if (currentState[i][j].getNorthWall()) {
 					g.drawLine(xPos, yPos, xPos + scale, yPos);
 				}
@@ -136,8 +143,16 @@ public final class Maze {
 			}
 			yPos += scale;
 		}
+		g2d.setColor(Color.RED);
+		g2d.fillRect(base + (this.currentPosition.getXPosition() * scale) + 1,
+				base + (this.currentPosition.getYPosition() * scale) + 1, scale - 1, scale - 1);
+		g2d.setColor(Color.BLACK);
 	}
 
+	/**
+	 * Method called to simulate one step in the generation process. Will only
+	 * update maze if there is another step in the generation process to take.
+	 */
 	public void tick() {
 		if (!moves.isEmpty()) {
 			final Position position = moves.remove(0).getPosition();
@@ -436,6 +451,7 @@ public final class Maze {
 	private void createEntrance() {
 		final int entrance = (int) (Math.random() * size);
 		finalState[entrance][0].setNorthWall(false);
+		currentState[entrance][0].setNorthWall(false);
 	}
 
 	/**
@@ -444,6 +460,7 @@ public final class Maze {
 	private void createExit() {
 		final int exit = (int) (Math.random() * size);
 		finalState[exit][size - 1].setSouthWall(false);
+		currentState[exit][size - 1].setSouthWall(false);
 	}
 
 }

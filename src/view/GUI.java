@@ -64,7 +64,7 @@ public class GUI extends JFrame {
 	public GUI() {
 		this.mazePane = new RenderPane();
 		this.toolPane = new JPanel();
-		this.timer = new Timer(10, new ActionListener() {
+		this.timer = new Timer(1, new ActionListener() {
 			public void actionPerformed(final ActionEvent e) {
 				generator.getMaze().tick();
 				mazePane.renderMaze(generator.getMaze());
