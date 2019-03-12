@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.Timer;
 
 import model.MazeGenerator;
 
@@ -50,6 +51,9 @@ public class GUI extends JFrame {
 	/** Button used to create and render a new maze. **/
 	private JPanel toolPane;
 
+	/** Timer used when rendering the generation of the maze. **/
+	private Timer timer;
+
 	////////////////////////
 	///// Constructors /////
 	////////////////////////
@@ -60,6 +64,15 @@ public class GUI extends JFrame {
 	public GUI() {
 		this.mazePane = new RenderPane();
 		this.toolPane = new JPanel();
+		this.timer = new Timer(10, new ActionListener() {
+			public void actionPerformed(final ActionEvent e) {
+				generator.getMaze().tick();
+				mazePane.renderMaze(generator.getMaze());
+				if (generator.getMaze().isLastFrame()) {
+					timer.stop();
+				}
+			}
+		});
 	}
 
 	//////////////////////////
@@ -141,7 +154,7 @@ public class GUI extends JFrame {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
 				generator.generateMaze((Integer) sizes.getModel().getValue());
-				mazePane.renderMaze(generator.getMaze());
+				timer.start();
 			}
 		});
 

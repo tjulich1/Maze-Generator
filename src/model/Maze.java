@@ -33,6 +33,12 @@ public final class Maze {
 	 **/
 	private MazeCell[][] currentState;
 
+	/**
+	 * The current position in the maze. Used when rendering the path taken during
+	 * generation.
+	 */
+	private Position currentPosition;
+
 	/** The number of rows and columns in the maze. **/
 	private int size;
 
@@ -114,22 +120,64 @@ public final class Maze {
 		for (int j = 0; j < size; j++) {
 			xPos = (renderPanelSize.width - (scale * this.size)) / 2;
 			for (int i = 0; i < size; i++) {
-				if (finalState[i][j].getNorthWall()) {
+				if (currentState[i][j].getNorthWall()) {
 					g.drawLine(xPos, yPos, xPos + scale, yPos);
 				}
-				if (finalState[i][j].getWestWall()) {
+				if (currentState[i][j].getWestWall()) {
 					g.drawLine(xPos, yPos, xPos, yPos + scale);
 				}
-				if (finalState[i][j].getSouthWall()) {
+				if (currentState[i][j].getSouthWall()) {
 					g.drawLine(xPos, yPos + scale, xPos + scale, yPos + scale);
 				}
-				if (finalState[i][j].getEastWall()) {
+				if (currentState[i][j].getEastWall()) {
 					g.drawLine(xPos + scale, yPos, xPos + scale, yPos + scale);
 				}
 				xPos += scale;
 			}
 			yPos += scale;
 		}
+	}
+
+	public void tick() {
+		if (!moves.isEmpty()) {
+			final Position position = moves.remove(0).getPosition();
+			if (position.getXPosition() > this.currentPosition.getXPosition()) {
+				if (currentState[position.getXPosition()][position.getYPosition()].getIsVisited()) {
+					this.currentPosition = position;
+				} else {
+					moveEastRender(this.currentPosition.getXPosition(), this.currentPosition.getYPosition());
+				}
+			} else if (position.getXPosition() < this.currentPosition.getXPosition()) {
+				if (currentState[position.getXPosition()][position.getYPosition()].getIsVisited()) {
+					this.currentPosition = position;
+				} else {
+					moveWestRender(this.currentPosition.getXPosition(), this.currentPosition.getYPosition());
+				}
+			} else if (position.getYPosition() > this.currentPosition.getYPosition()) {
+				if (currentState[position.getXPosition()][position.getYPosition()].getIsVisited()) {
+					this.currentPosition = position;
+				} else {
+					moveSouthRender(this.currentPosition.getXPosition(), this.currentPosition.getYPosition());
+				}
+			} else if (position.getYPosition() < this.currentPosition.getYPosition()) {
+				if (currentState[position.getXPosition()][position.getYPosition()].getIsVisited()) {
+					this.currentPosition = position;
+				} else {
+					moveNorthRender(this.currentPosition.getXPosition(), this.currentPosition.getYPosition());
+				}
+			}
+			this.currentPosition = position;
+		}
+	}
+
+	/**
+	 * Method called from front end to know when to stop rendering. Returns true if
+	 * all moves made during generation have been rendered.
+	 * 
+	 * @return True if last frame has been reached.
+	 */
+	public boolean isLastFrame() {
+		return this.moves.isEmpty();
 	}
 
 	///////////////////////////
@@ -215,6 +263,8 @@ public final class Maze {
 
 		// Starting position.
 		Position currentPosition = new Position(currentX, currentY);
+		this.currentPosition = currentPosition;
+		currentState[currentX][currentY].setVisited(true);
 
 		// Push initial position onto stack.
 		path.push(currentPosition);
@@ -223,10 +273,12 @@ public final class Maze {
 			// If there are no moves from current position, go back to last position.
 			if (!checkMoves(currentPosition)) {
 				currentPosition = path.pop();
+				moves.add(new Move(currentPosition, "TEST"));
 			} // Else move to new random location adjacent to current location.
 			else {
 				currentPosition = makeMove(currentPosition);
 				path.push(currentPosition);
+				moves.add(new Move(currentPosition, "Test"));
 			}
 		}
 	}
@@ -274,8 +326,8 @@ public final class Maze {
 		while (!moveMade) {
 			if (testDirection == 0) {
 				if (y > 0 && !finalState[x][y - 1].getIsVisited()) {
-					moveNorth(x, y);
 					newPosition = new Position(x, y - 1);
+					moveNorth(x, y);
 					moveMade = true;
 				}
 			} else if (testDirection == 1) {
@@ -352,6 +404,30 @@ public final class Maze {
 		finalState[x - 1][y].setVisited(true);
 		finalState[x - 1][y].setEastWall(false);
 		finalState[x][y].setWestWall(false);
+	}
+
+	private void moveNorthRender(final int x, final int y) {
+		currentState[x][y - 1].setVisited(true);
+		currentState[x][y - 1].setSouthWall(false);
+		currentState[x][y].setNorthWall(false);
+	}
+
+	private void moveEastRender(final int x, final int y) {
+		currentState[x + 1][y].setVisited(true);
+		currentState[x + 1][y].setWestWall(false);
+		currentState[x][y].setEastWall(false);
+	}
+
+	private void moveSouthRender(final int x, final int y) {
+		currentState[x][y + 1].setVisited(true);
+		currentState[x][y + 1].setNorthWall(false);
+		currentState[x][y].setSouthWall(false);
+	}
+
+	private void moveWestRender(final int x, final int y) {
+		currentState[x - 1][y].setVisited(true);
+		currentState[x - 1][y].setEastWall(false);
+		currentState[x][y].setWestWall(false);
 	}
 
 	/**
