@@ -3,7 +3,7 @@ package view;
 /**
  * Driver for Maze Generator program, used to start the program.
  * 
- * @author Trenton Julich
+ * @author Trent Julich
  * @version 9 March 2019
  */
 public class Driver {
