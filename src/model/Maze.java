@@ -50,6 +50,12 @@ public final class Maze {
 	 **/
 	private List<Move> moves;
 
+	/**
+	 * Flag used to tell the maze whether it is rendering the current step, or
+	 * skipping to rendering the final step;
+	 */
+	private boolean skip;
+
 	////////////////////////
 	///// Constructors /////
 	////////////////////////
@@ -88,6 +94,16 @@ public final class Maze {
 	}
 
 	/**
+	 * Method used to set whether the user wants to render the current step, or skip
+	 * to rendering the final maze state.
+	 * 
+	 * @param skip
+	 */
+	public void setSkip(final boolean skip) {
+		this.skip = skip;
+	}
+
+	/**
 	 * Method used to assign the size of the panel that this maze will be rendered
 	 * to. Should be done before render method is called to ensure proper scaling of
 	 * the maze in proportion to the size of the window.
@@ -107,6 +123,63 @@ public final class Maze {
 	 * @param g The graphics object to use in rendering.
 	 */
 	public void render(final Graphics g) {
+		if (skip) {
+			renderFinal(g);
+		} else {
+			final Graphics2D g2d = (Graphics2D) g;
+			g2d.setStroke(new BasicStroke(1));
+			g.setColor(Color.BLACK);
+
+			// Change scale and starting position so that entire maze can fit on maze pane.
+			int scale = (renderPanelSize.height - 10) / this.size;
+			int xPos = (renderPanelSize.width - (scale * this.size)) / 2;
+			int yPos = (renderPanelSize.height - (scale * this.size)) / 2;
+
+			final int base = (renderPanelSize.width - (scale * this.size)) / 2;
+
+			// Check and draw each maze cell wall (if it exists).
+			for (int j = 0; j < size; j++) {
+				xPos = (renderPanelSize.width - (scale * this.size)) / 2;
+				for (int i = 0; i < size; i++) {
+					if (currentState[i][j].getIsVisited()) {
+						g2d.setColor(Color.LIGHT_GRAY);
+						g2d.fillRect(xPos, yPos, scale, scale);
+						g2d.setColor(Color.BLACK);
+					}
+					if (currentState[i][j].getNorthWall()) {
+						g.drawLine(xPos, yPos, xPos + scale, yPos);
+					}
+					if (currentState[i][j].getWestWall()) {
+						g.drawLine(xPos, yPos, xPos, yPos + scale);
+					}
+					if (currentState[i][j].getSouthWall()) {
+						g.drawLine(xPos, yPos + scale, xPos + scale, yPos + scale);
+					}
+					if (currentState[i][j].getEastWall()) {
+						g.drawLine(xPos + scale, yPos, xPos + scale, yPos + scale);
+					}
+					xPos += scale;
+				}
+				yPos += scale;
+			}
+
+			if (!moves.isEmpty()) {
+				g2d.setColor(Color.RED);
+				g2d.fillRect(base + (this.currentPosition.getXPosition() * scale) + 1,
+						base + (this.currentPosition.getYPosition() * scale) + 1, scale - 1, scale - 1);
+				g2d.setColor(Color.BLACK);
+			}
+		}
+	}
+
+	/**
+	 * Method called on a maze to draw it using the given graphics object.
+	 * setRenderPanelSize method should be invoked prior to calling this method to
+	 * ensure proper scaling of the maze relative to the size of the viewing window.
+	 * 
+	 * @param g The graphics object to use in rendering.
+	 */
+	public void renderFinal(final Graphics g) {
 		final Graphics2D g2d = (Graphics2D) g;
 		g2d.setStroke(new BasicStroke(1));
 		g.setColor(Color.BLACK);
@@ -122,33 +195,26 @@ public final class Maze {
 		for (int j = 0; j < size; j++) {
 			xPos = (renderPanelSize.width - (scale * this.size)) / 2;
 			for (int i = 0; i < size; i++) {
-				if (currentState[i][j].getIsVisited()) {
-					g2d.setColor(Color.LIGHT_GRAY);
-					g2d.fillRect(xPos, yPos, scale, scale);
-					g2d.setColor(Color.BLACK);
-				}
-				if (currentState[i][j].getNorthWall()) {
+
+				g2d.setColor(Color.LIGHT_GRAY);
+				g2d.fillRect(xPos, yPos, scale, scale);
+				g2d.setColor(Color.BLACK);
+
+				if (finalState[i][j].getNorthWall()) {
 					g.drawLine(xPos, yPos, xPos + scale, yPos);
 				}
-				if (currentState[i][j].getWestWall()) {
+				if (finalState[i][j].getWestWall()) {
 					g.drawLine(xPos, yPos, xPos, yPos + scale);
 				}
-				if (currentState[i][j].getSouthWall()) {
+				if (finalState[i][j].getSouthWall()) {
 					g.drawLine(xPos, yPos + scale, xPos + scale, yPos + scale);
 				}
-				if (currentState[i][j].getEastWall()) {
+				if (finalState[i][j].getEastWall()) {
 					g.drawLine(xPos + scale, yPos, xPos + scale, yPos + scale);
 				}
 				xPos += scale;
 			}
 			yPos += scale;
-		}
-
-		if (!moves.isEmpty()) {
-			g2d.setColor(Color.RED);
-			g2d.fillRect(base + (this.currentPosition.getXPosition() * scale) + 1,
-					base + (this.currentPosition.getYPosition() * scale) + 1, scale - 1, scale - 1);
-			g2d.setColor(Color.BLACK);
 		}
 	}
 

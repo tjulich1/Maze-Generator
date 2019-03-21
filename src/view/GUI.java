@@ -140,7 +140,7 @@ public class GUI extends JFrame {
 
 		// sets size and layout of tool pane.
 		final int paneHeight = 500;
-		final int paneWidth = 120;
+		final int paneWidth = 100;
 		toolPane.setSize(new Dimension(paneWidth, paneHeight));
 		toolPane.setPreferredSize(new Dimension(paneWidth, paneHeight));
 		toolPane.setLayout(new GridBagLayout());
@@ -154,21 +154,45 @@ public class GUI extends JFrame {
 		SpinnerModel sizeModel = new SpinnerNumberModel(start, min, max, step);
 		sizes.setModel(sizeModel);
 
-		// create run button used to start rendering maze.
+		// create run button used to start rendering maze or skip to final rendering
+		// step.
 		final JButton runButton = new JButton("Run");
+		final JButton skipButton = new JButton("Skip");
+
 		runButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				generator.generateMaze((Integer) sizes.getModel().getValue());
-				timer.start();
+				if (generator.getMaze() != null) {
+					skipButton.setEnabled(true);
+					generator.getMaze().setSkip(false);
+					generator.generateMaze((Integer) sizes.getModel().getValue());
+					timer.start();
+				} else {
+					skipButton.setEnabled(true);
+					generator.generateMaze((Integer) sizes.getModel().getValue());
+					timer.start();
+				}
 			}
 		});
+
+		skipButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				skipButton.setEnabled(false);
+				timer.stop();
+				generator.getMaze().setSkip(true);
+				mazePane.renderMaze(generator.getMaze());
+			}
+		});
+		skipButton.setEnabled(false);
 
 		// constraint to make each component have its own row, and add padding between.
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 0;
+		toolPane.add(skipButton, c);
+		c.insets = new Insets(30, 0, 0, 0);
+		c.gridy++;
 		toolPane.add(runButton, c);
-		c.insets = new Insets(60, 0, 0, 0);
 		c.gridy++;
 		toolPane.add(sizes, c);
 		c.gridy++;
