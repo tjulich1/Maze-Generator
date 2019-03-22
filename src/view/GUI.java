@@ -59,6 +59,9 @@ public class GUI extends JFrame {
 	/** Timer used when rendering the generation of the maze. **/
 	private Timer timer;
 
+	/** Button used to skip to rendering the final maze. **/
+	private final JButton skipButton;
+
 	////////////////////////
 	///// Constructors /////
 	////////////////////////
@@ -69,12 +72,17 @@ public class GUI extends JFrame {
 	public GUI() {
 		this.mazePane = new RenderPane();
 		this.toolPane = new JPanel();
+		this.skipButton = new JButton("Skip");
+
+		// Creates timer which ticks 60 times per second.
 		this.timer = new Timer(1000 / 60, new ActionListener() {
 			public void actionPerformed(final ActionEvent e) {
+				// Takes one step through maze generation, then renders the next frame.
 				generator.getMaze().tick();
 				mazePane.renderMaze(generator.getMaze());
 				if (generator.getMaze().isLastFrame()) {
 					timer.stop();
+					skipButton.setEnabled(false);
 				}
 			}
 		});
@@ -92,6 +100,8 @@ public class GUI extends JFrame {
 		setupRenderPane();
 		setupToolPane();
 		addComponents();
+		// Pack down to smallest size with components, then add 50 pixel padding to
+		// height and width.
 		this.pack();
 		this.setPreferredSize(new Dimension(this.getWidth() + 50, this.getHeight() + 50));
 		this.pack();
@@ -127,8 +137,9 @@ public class GUI extends JFrame {
 	 * size, etc.
 	 */
 	private void setupRenderPane() {
-		mazePane.setPreferredSize(new Dimension(this.getHeight() - 200, this.getHeight() - 200));
-		mazePane.setSize(new Dimension(this.getHeight() - 200, this.getHeight() - 200));
+		final Dimension size = new Dimension(this.getHeight() - 200, this.getHeight() - 200);
+		mazePane.setPreferredSize(size);
+		mazePane.setSize(size);
 		generator = new MazeGenerator(mazePane.getSize());
 	}
 
@@ -157,7 +168,6 @@ public class GUI extends JFrame {
 		// create run button used to start rendering maze or skip to final rendering
 		// step.
 		final JButton runButton = new JButton("Run");
-		final JButton skipButton = new JButton("Skip");
 
 		runButton.addActionListener(new ActionListener() {
 			@Override
@@ -207,7 +217,7 @@ public class GUI extends JFrame {
 
 		// Constraint used to add a 50 pixel buffer to the edge of each component.
 		GridBagConstraints c = new GridBagConstraints();
-		c.insets = new Insets(0, 50, 0, 0);
+		c.insets = new Insets(0, 25, 0, 0);
 
 		this.add(toolPane, c);
 	}

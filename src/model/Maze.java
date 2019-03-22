@@ -48,7 +48,7 @@ public final class Maze {
 	/**
 	 * List containing all moves that were taken during the last maze generation.
 	 **/
-	private List<Move> moves;
+	private List<Position> moves;
 
 	/**
 	 * Flag used to tell the maze whether it is rendering the current step, or
@@ -70,7 +70,7 @@ public final class Maze {
 		this.finalState = new MazeCell[size][size];
 		this.currentState = new MazeCell[size][size];
 		this.renderPanelSize = new Dimension(0, 0);
-		this.moves = new LinkedList<Move>();
+		this.moves = new LinkedList<Position>();
 	}
 
 	//////////////////////////
@@ -81,8 +81,16 @@ public final class Maze {
 	 * Method called to start maze generation.
 	 */
 	public void generate() {
-		fillWithNewCells();
-		linkCells();
+
+		/*
+		 * Initialize 2 MazeCell[][]'s for final maze, as well as maze used for
+		 * rendering generation.
+		 */
+		fillWithNewCells(currentState);
+		fillWithNewCells(finalState);
+		linkCells(currentState);
+		linkCells(finalState);
+
 		createMaze();
 		createEntrance();
 		createExit();
@@ -97,7 +105,9 @@ public final class Maze {
 	 * Method used to set whether the user wants to render the current step, or skip
 	 * to rendering the final maze state.
 	 * 
-	 * @param skip
+	 * @param skip boolean flag representing whether the user wants the next step in
+	 *             generation rendered (false) or if the user wants the final maze
+	 *             rendered (true).
 	 */
 	public void setSkip(final boolean skip) {
 		this.skip = skip;
@@ -123,63 +133,12 @@ public final class Maze {
 	 * @param g The graphics object to use in rendering.
 	 */
 	public void render(final Graphics g) {
+		MazeCell[][] mazeToDraw;
 		if (skip) {
-			renderFinal(g);
+			mazeToDraw = finalState;
 		} else {
-			final Graphics2D g2d = (Graphics2D) g;
-			g2d.setStroke(new BasicStroke(1));
-			g.setColor(Color.BLACK);
-
-			// Change scale and starting position so that entire maze can fit on maze pane.
-			int scale = (renderPanelSize.height - 10) / this.size;
-			int xPos = (renderPanelSize.width - (scale * this.size)) / 2;
-			int yPos = (renderPanelSize.height - (scale * this.size)) / 2;
-
-			final int base = (renderPanelSize.width - (scale * this.size)) / 2;
-
-			// Check and draw each maze cell wall (if it exists).
-			for (int j = 0; j < size; j++) {
-				xPos = (renderPanelSize.width - (scale * this.size)) / 2;
-				for (int i = 0; i < size; i++) {
-					if (currentState[i][j].getIsVisited()) {
-						g2d.setColor(Color.LIGHT_GRAY);
-						g2d.fillRect(xPos, yPos, scale, scale);
-						g2d.setColor(Color.BLACK);
-					}
-					if (currentState[i][j].getNorthWall()) {
-						g.drawLine(xPos, yPos, xPos + scale, yPos);
-					}
-					if (currentState[i][j].getWestWall()) {
-						g.drawLine(xPos, yPos, xPos, yPos + scale);
-					}
-					if (currentState[i][j].getSouthWall()) {
-						g.drawLine(xPos, yPos + scale, xPos + scale, yPos + scale);
-					}
-					if (currentState[i][j].getEastWall()) {
-						g.drawLine(xPos + scale, yPos, xPos + scale, yPos + scale);
-					}
-					xPos += scale;
-				}
-				yPos += scale;
-			}
-
-			if (!moves.isEmpty()) {
-				g2d.setColor(Color.RED);
-				g2d.fillRect(base + (this.currentPosition.getXPosition() * scale) + 1,
-						base + (this.currentPosition.getYPosition() * scale) + 1, scale - 1, scale - 1);
-				g2d.setColor(Color.BLACK);
-			}
+			mazeToDraw = currentState;
 		}
-	}
-
-	/**
-	 * Method called on a maze to draw it using the given graphics object.
-	 * setRenderPanelSize method should be invoked prior to calling this method to
-	 * ensure proper scaling of the maze relative to the size of the viewing window.
-	 * 
-	 * @param g The graphics object to use in rendering.
-	 */
-	public void renderFinal(final Graphics g) {
 		final Graphics2D g2d = (Graphics2D) g;
 		g2d.setStroke(new BasicStroke(1));
 		g.setColor(Color.BLACK);
@@ -195,26 +154,33 @@ public final class Maze {
 		for (int j = 0; j < size; j++) {
 			xPos = (renderPanelSize.width - (scale * this.size)) / 2;
 			for (int i = 0; i < size; i++) {
-
-				g2d.setColor(Color.LIGHT_GRAY);
-				g2d.fillRect(xPos, yPos, scale, scale);
-				g2d.setColor(Color.BLACK);
-
-				if (finalState[i][j].getNorthWall()) {
+				if (mazeToDraw[i][j].getIsVisited()) {
+					g2d.setColor(Color.LIGHT_GRAY);
+					g2d.fillRect(xPos, yPos, scale, scale);
+					g2d.setColor(Color.BLACK);
+				}
+				if (mazeToDraw[i][j].getNorthWall()) {
 					g.drawLine(xPos, yPos, xPos + scale, yPos);
 				}
-				if (finalState[i][j].getWestWall()) {
+				if (mazeToDraw[i][j].getWestWall()) {
 					g.drawLine(xPos, yPos, xPos, yPos + scale);
 				}
-				if (finalState[i][j].getSouthWall()) {
+				if (mazeToDraw[i][j].getSouthWall()) {
 					g.drawLine(xPos, yPos + scale, xPos + scale, yPos + scale);
 				}
-				if (finalState[i][j].getEastWall()) {
+				if (mazeToDraw[i][j].getEastWall()) {
 					g.drawLine(xPos + scale, yPos, xPos + scale, yPos + scale);
 				}
 				xPos += scale;
 			}
 			yPos += scale;
+		}
+
+		if (!moves.isEmpty() && !skip) {
+			g2d.setColor(Color.RED);
+			g2d.fillRect(base + (this.currentPosition.getXPosition() * scale) + 1,
+					base + (this.currentPosition.getYPosition() * scale) + 1, scale - 1, scale - 1);
+			g2d.setColor(Color.BLACK);
 		}
 	}
 
@@ -224,7 +190,7 @@ public final class Maze {
 	 */
 	public void tick() {
 		if (!moves.isEmpty()) {
-			final Position nextPosition = moves.remove(0).getPosition();
+			final Position nextPosition = moves.remove(0);
 
 			final int currentX = this.currentPosition.getXPosition();
 			final int currentY = this.currentPosition.getYPosition();
@@ -270,17 +236,11 @@ public final class Maze {
 	/**
 	 * Helper method used to initialize the maze with new cells.
 	 */
-	private void fillWithNewCells() {
+	private void fillWithNewCells(final MazeCell[][] maze) {
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				// Fill current maze state with empty cells.
-				finalState[i][j] = new MazeCell();
-			}
-		}
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				// Fill secondary 'rendering' maze with empty cells.
-				currentState[i][j] = new MazeCell();
+				maze[i][j] = new MazeCell();
 			}
 		}
 	}
@@ -288,44 +248,24 @@ public final class Maze {
 	/**
 	 * Helper method used to connect each cell with its neighbors.
 	 */
-	private void linkCells() {
+	private void linkCells(final MazeCell[][] maze) {
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				// If east neighbor exists, link it to current cell.
 				if (i > 0) {
-					finalState[i][j].setWestCell(finalState[i - 1][j]);
+					maze[i][j].setWestCell(maze[i - 1][j]);
 				}
 				// If west neighbor exists, link it to current cell.
 				if (i < size - 1) {
-					finalState[i][j].setEastCell(finalState[i + 1][j]);
+					maze[i][j].setEastCell(maze[i + 1][j]);
 				}
 				// If north neighbor exists, link it to current cell.
 				if (j > 0) {
-					finalState[i][j].setNorthCell(finalState[i][j - 1]);
+					maze[i][j].setNorthCell(maze[i][j - 1]);
 				}
 				// If south neighbor exists, link it to current cell.
 				if (j < size - 1) {
-					finalState[i][j].setSouthCell(finalState[i][j + 1]);
-				}
-			}
-		}
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				// If east neighbor exists, link it to current cell.
-				if (i > 0) {
-					currentState[i][j].setWestCell(currentState[i - 1][j]);
-				}
-				// If west neighbor exists, link it to current cell.
-				if (i < size - 1) {
-					currentState[i][j].setEastCell(currentState[i + 1][j]);
-				}
-				// If north neighbor exists, link it to current cell.
-				if (j > 0) {
-					currentState[i][j].setNorthCell(currentState[i][j - 1]);
-				}
-				// If south neighbor exists, link it to current cell.
-				if (j < size - 1) {
-					currentState[i][j].setSouthCell(currentState[i][j + 1]);
+					maze[i][j].setSouthCell(maze[i][j + 1]);
 				}
 			}
 		}
@@ -356,13 +296,14 @@ public final class Maze {
 			// If there are no moves from current position, go back to last position.
 			if (!checkMoves(currentPosition)) {
 				currentPosition = path.pop();
-				moves.add(new Move(currentPosition, "TEST"));
+				moves.add(currentPosition);
 			} // Else move to new random location adjacent to current location.
 			else {
 				currentPosition = makeMove(currentPosition);
 				path.push(currentPosition);
-				moves.add(new Move(currentPosition, "Test"));
+
 			}
+			moves.add(currentPosition);
 		}
 	}
 
