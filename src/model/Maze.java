@@ -301,7 +301,6 @@ public final class Maze {
 			else {
 				currentPosition = makeMove(currentPosition);
 				path.push(currentPosition);
-
 			}
 			moves.add(currentPosition);
 		}

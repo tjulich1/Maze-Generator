@@ -3,7 +3,7 @@ package model;
 import java.awt.Dimension;
 
 /**
- * Maze class, containing methods used to generate mazes.
+ * Maze generator class, containing methods used to create mazes.
  * 
  * @author Trenton Julich
  * @version 9 March 2019

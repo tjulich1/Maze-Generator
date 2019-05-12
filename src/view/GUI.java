@@ -215,7 +215,10 @@ public class GUI extends JFrame {
 	private void addComponents() {
 		this.add(mazePane);
 
-		// Constraint used to add a 50 pixel buffer to the edge of each component.
+		/*
+		 * Constraint used to add a 25 pixel buffer between the maze pane and the tool
+		 * panel.
+		 */
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(0, 25, 0, 0);
 
@@ -228,15 +231,23 @@ public class GUI extends JFrame {
 	 */
 	private JSlider createSlider() {
 		final JSlider slider = new JSlider();
+
+		// Make slider up and down.
 		slider.setOrientation(JSlider.VERTICAL);
+
+		// Create table with labels for slider.
 		final Hashtable<Integer, JLabel> labels = new Hashtable<>();
 		labels.put(1, new JLabel("Slow"));
 		labels.put(250, new JLabel("Fast"));
+
+		// Set slider values.
 		slider.setLabelTable(labels);
 		slider.setPaintLabels(true);
 		slider.setMinimum(1);
 		slider.setMaximum(250);
 		slider.setMinorTickSpacing(10);
+
+		// When slider is changed, update timer tick speed.
 		slider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				timer.setDelay(1000 / slider.getValue());
