@@ -1,3 +1,5 @@
+# Maze Generator
+
 <img src="https://user-images.githubusercontent.com/33639246/111559426-bbec7700-874d-11eb-8954-24886dc54880.JPG" align="right" height="500px">
 
 I created this maze generator as a visual aid for intro CS students learning recursion. 
