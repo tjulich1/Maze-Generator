@@ -16,7 +16,7 @@ representation of how recursion "unwinds" itself.
   - Control over the speed of the maze
 
 TODO:
-  - Further optimize the method of rendering the maze generation process
+  - Further optimize the method of rendering
 
 
 <img src="https://user-images.githubusercontent.com/33639246/111560518-e17a8000-874f-11eb-96b1-5c9d20eeb9e0.JPG" align="center">
